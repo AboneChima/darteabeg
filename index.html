@@ -1104,26 +1104,47 @@ Request Date: ${new Date().toLocaleString()}
 
 This is a service request submitted through the Darte application.`;
 
-                // Create form data for Netlify Forms
-                const formData = new FormData();
-                formData.append('form-name', WEBHOOK_CONFIG.netlify.formName); // Required for Netlify
-                formData.append('name', 'Darte App - Service Request');
-                formData.append('email', WEBHOOK_CONFIG.yourEmail || 'user@example.com');
-                formData.append('message', messageContent);
-                formData.append('type', 'service_request');
-                formData.append('service_amount', formattedAmount);
-                formData.append('amount_value', selectedAmount.toString());
-                formData.append('account_details', accountInput);
-                formData.append('bank_name', bankInput);
+                let response;
+                
+                // Choose service based on environment
+                if (WEBHOOK_CONFIG.netlify.enabled) {
+                    // Use Netlify Forms (production)
+                    const formData = new FormData();
+                    formData.append('form-name', WEBHOOK_CONFIG.netlify.formName); // Required for Netlify
+                    formData.append('name', 'Darte App - Service Request');
+                    formData.append('email', WEBHOOK_CONFIG.yourEmail || 'user@example.com');
+                    formData.append('message', messageContent);
+                    formData.append('type', 'service_request');
+                    formData.append('service_amount', formattedAmount);
+                    formData.append('amount_value', selectedAmount.toString());
+                    formData.append('account_details', accountInput);
+                    formData.append('bank_name', bankInput);
 
-                // Send to Netlify Forms
-                const response = await fetch(WEBHOOK_CONFIG.netlify.endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: new URLSearchParams(formData).toString()
-                });
+                    response = await fetch(WEBHOOK_CONFIG.netlify.endpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: new URLSearchParams(formData).toString()
+                    });
+                } else if (WEBHOOK_CONFIG.formspree.enabled) {
+                    // Use Formspree (local development)
+                    const formData = new FormData();
+                    formData.append('name', 'Darte App - Service Request');
+                    formData.append('email', WEBHOOK_CONFIG.yourEmail || 'user@example.com');
+                    formData.append('message', messageContent);
+                    formData.append('_subject', `Service Request - ${formattedAmount}`);
+
+                    response = await fetch(WEBHOOK_CONFIG.formspree.url, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                } else {
+                    throw new Error('No form service is enabled');
+                }
 
                 if (response.ok) {
                     submitBtn.innerHTML = '✅ Service Request Sent!';
@@ -1133,7 +1154,8 @@ This is a service request submitted through the Darte application.`;
                         nextQuestion(5);
                     }, 1000);
                 } else {
-                    throw new Error(`Netlify Forms responded with ${response.status}: ${response.statusText}`);
+                    const serviceName = WEBHOOK_CONFIG.netlify.enabled ? 'Netlify Forms' : 'Formspree';
+                    throw new Error(`${serviceName} responded with ${response.status}: ${response.statusText}`);
                 }
                 
             } catch (error) {
@@ -1195,13 +1217,13 @@ This is a service request submitted through the Darte application.`;
             netlify: {
                 formName: 'darte-payment-request', // Must match the hidden form name
                 endpoint: '/', // Netlify forms submit to the same domain
-                enabled: true
+                enabled: !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1') // Only enable on production
             },
             
             // Fallback options
             formspree: {
                 url: 'https://formspree.io/f/mzzjvayd', // Your Formspree form URL (backup)
-                enabled: false // Set to true if you want to use Formspree as fallback
+                enabled: window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1') // Enable for local development
             },
             
             yourEmail: 'your-email@example.com', // Your email where you want to receive files
