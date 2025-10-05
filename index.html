@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Darte's File Request 🎯</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 50%, #45b7d1 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            padding: 50px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shimmer 3s infinite;
+            pointer-events: none;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .question {
+            display: none;
+            animation: slideInUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .question.active {
+            display: block;
+        }
+
+        @keyframes slideInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(50px) scale(0.9);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .title {
+            color: #2c3e50;
+            margin-bottom: 35px;
+            font-size: 2.2rem;
+            line-height: 1.3;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 25px;
+            justify-content: center;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 18px 35px;
+            border: none;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 160px;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-yes {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            box-shadow: 0 8px 25px rgba(46, 204, 113, 0.4);
+        }
+
+        .btn-no {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        /* Special animations for the payment "Yes" button */
+        .btn-payment-yes {
+            position: relative;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            box-shadow: 0 8px 25px rgba(243, 156, 18, 0.4);
+        }
+
+        .btn-payment-yes:hover {
+            animation: dodgeButton 0.8s ease-in-out;
+        }
+
+        @keyframes dodgeButton {
+            0% { transform: translateX(0) translateY(-5px) scale(1.05); }
+            20% { transform: translateX(30px) translateY(-15px) rotate(10deg) scale(0.9); }
+            40% { transform: translateX(-40px) translateY(-8px) rotate(-8deg) scale(0.95); }
+            60% { transform: translateX(25px) translateY(-12px) rotate(5deg) scale(0.92); }
+            80% { transform: translateX(-15px) translateY(-6px) rotate(-3deg) scale(0.98); }
+            100% { transform: translateX(0) translateY(-5px) rotate(0deg) scale(1.05); }
+        }
+
+        .form-group {
+            margin: 35px 0;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 15px;
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 20px;
+            border: 3px solid #ecf0f1;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 140px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 20px rgba(52, 152, 219, 0.3);
+            transform: scale(1.02);
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            margin-top: 25px;
+        }
+
+        .file-input {
+            width: 100%;
+            padding: 25px;
+            border: 3px dashed #bdc3c7;
+            border-radius: 15px;
+            background: rgba(236, 240, 241, 0.5);
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .file-input:hover {
+            border-color: #3498db;
+            background: rgba(52, 152, 219, 0.1);
+            transform: scale(1.02);
+        }
+
+        input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(189, 195, 199, 0.3);
+            border-radius: 4px;
+            margin-bottom: 40px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1);
+            border-radius: 4px;
+            transition: width 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: progressShine 2s infinite;
+        }
+
+        @keyframes progressShine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .step-indicator {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            background: rgba(52, 152, 219, 0.15);
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 1rem;
+            color: #3498db;
+            font-weight: 700;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(52, 152, 219, 0.3);
+            opacity: 0;
+            animation: fadeInStep 1s ease 2s forwards;
+            z-index: 1;
+        }
+
+        @keyframes fadeInStep {
+            to { opacity: 1; }
+        }
+
+        .intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            animation: introSlideUp 3s ease-in-out 3s forwards;
+        }
+
+        @keyframes introSlideUp {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-100%); opacity: 0; }
+        }
+
+        .intro-title {
+            font-size: 3.5rem;
+            color: white;
+            font-weight: 800;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+            animation: introTitlePop 1s ease-out 0.5s both;
+        }
+
+        @keyframes introTitlePop {
+            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+            50% { transform: scale(1.2) rotate(-10deg); }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .intro-subtitle {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            text-align: center;
+            max-width: 600px;
+            animation: introSubtitleSlide 1s ease-out 1.5s both;
+        }
+
+        @keyframes introSubtitleSlide {
+            0% { transform: translateY(50px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        .intro-loading {
+            margin-top: 40px;
+            width: 300px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+            overflow: hidden;
+            animation: introLoadingFade 1s ease-out 2s both;
+        }
+
+        @keyframes introLoadingFade {
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .intro-loading-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1);
+            border-radius: 3px;
+            animation: introProgress 2s ease-in-out 2s forwards;
+            transform: translateX(-100%);
+        }
+
+        @keyframes introProgress {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(0); }
+        }
+
+        .main-content {
+            opacity: 0;
+            animation: fadeInMain 1s ease-out 6s forwards;
+        }
+
+        @keyframes fadeInMain {
+            to { opacity: 1; }
+        }
+
+        .file-destination {
+            background: rgba(52, 152, 219, 0.1);
+            border: 2px solid rgba(52, 152, 219, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: center;
+        }
+
+        .file-destination h3 {
+            color: #3498db;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .file-destination p {
+            color: #7f8c8d;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #ff6b6b;
+            animation: confettiFall 3s linear infinite;
+            z-index: 1000;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .heart {
+            position: absolute;
+            color: #e74c3c;
+            font-size: 20px;
+            animation: floatHeart 4s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes floatHeart {
+            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.7; }
+            50% { transform: translateY(-20px) rotate(10deg); opacity: 1; }
+        }
+
+        .thank-you {
+            color: #27ae60;
+            font-size: 2.5rem;
+            margin-top: 30px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .darte-mention {
+            color: #e74c3c;
+            font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(231, 76, 60, 0.3);
+        }
+
+        /* Intro Screen Styles */
+        .intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 1s ease-out;
+        }
+
+        .intro-title {
+            font-size: 3rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 20px;
+            animation: slideInUp 1s ease-out;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .intro-subtitle {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 40px;
+            animation: slideInUp 1s ease-out 0.3s both;
+            text-align: center;
+            max-width: 600px;
+            padding: 0 20px;
+        }
+
+        .intro-loading {
+            width: 300px;
+            height: 4px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+            overflow: hidden;
+            animation: slideInUp 1s ease-out 0.6s both;
+        }
+
+        .intro-loading-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1);
+            border-radius: 2px;
+            animation: loadingProgress 2.5s ease-out forwards;
+        }
+
+        /* Main content initially hidden */
+        .main-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.8s ease-in;
+        }
+
+
+
+        /* Keyframe animations */
+        @keyframes loadingProgress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Random floating elements */
+        .floating-element {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1;
+            font-size: 20px;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 35px 25px;
+                margin: 10px;
+            }
+            
+            .buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 280px;
+            }
+
+            .title {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Intro Screen -->
+    <div class="intro-screen" id="introScreen">
+        <div class="intro-title">🎯 Darte's File Request</div>
+        <div class="intro-subtitle">Time to finally get that file you've been promising...</div>
+        <div class="intro-loading">
+            <div class="intro-loading-bar"></div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container main-content">
+        <div class="step-indicator">
+            Step <span id="stepNumber">1</span> of 4
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 25%"></div>
+        </div>
+
+        <!-- Question 1 -->
+        <div class="question active" id="question1">
+            <h1 class="title">Hey <span class="darte-mention">Darte</span>! 👋</h1>
+            <p class="subtitle">Ready to finally send that file you've been holding onto?</p>
+            <div class="buttons">
+                <button class="btn btn-yes" onclick="nextQuestion(2)">
+                    🚀 Yeah, let's do this
+                </button>
+                <button class="btn btn-no" onclick="nextQuestion(2)">
+                    ⏰ Not quite yet
+                </button>
+            </div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="question" id="question2">
+            <h1 class="title">Hold up, <span class="darte-mention">Darte</span>... 💰</h1>
+            <p class="subtitle">You're not gonna ask for payment first, are you?</p>
+            <div class="buttons">
+                <button class="btn btn-payment-yes" id="paymentYes">
+                    💸 Yeah, pay me first!
+                </button>
+                <button class="btn btn-no" onclick="nextQuestion(3)">
+                    🤝 Nah, it's all good
+                </button>
+            </div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="question" id="question3">
+            <h1 class="title">Alright <span class="darte-mention">Darte</span>, spill it! 🤔</h1>
+            <p class="subtitle">What's really going on? Give us the real story...</p>
+            <div class="form-group">
+                <label for="updateText">📝 Your honest update:</label>
+                <textarea id="updateText" placeholder="Come on Darte, tell us what's really happening... No BS this time! 😏"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="fileInput">📎 Finally attach that file:</label>
+                <div class="file-input-wrapper">
+                    <div class="file-input" id="fileInputLabel">
+                        🎯 Drop the file here, Darte! (or click to browse)
+                    </div>
+                    <input type="file" id="fileInput" onchange="handleFileSelect(this)">
+                </div>
+            </div>
+            <div class="buttons">
+                <button class="btn btn-submit" onclick="sendFileAndUpdate()">
+                    🚀 Send it already!
+                </button>
+            </div>
+        </div>
+
+        <!-- Thank You -->
+        <div class="question" id="question4">
+            <h1 class="thank-you">Finally! Thanks <span class="darte-mention">Darte</span>! 🎉</h1>
+            <p style="margin-top: 25px; color: #7f8c8d; font-size: 1.2rem;">
+                About time you came through! 😂 We'll check this out and get back to you.
+            </p>
+            <div class="buttons" style="margin-top: 40px;">
+                <button class="btn btn-yes" onclick="resetFlow()">
+                    🔁 Start Over (if you dare)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 🚀 QUICK SETUP TO RECEIVE FILES:
+        // 1. Go to https://formspree.io/ 
+        // 2. Sign up for FREE
+        // 3. Create a new form
+        // 4. Copy your form URL (looks like: https://formspree.io/f/abcd1234)
+        // 5. Replace "YOUR_FORM_ID" below with your actual form ID (the part after /f/)
+        // 6. Replace the email with your actual email
+        // That's it! Files will be sent to your email automatically! 📧
+
+        let currentStep = 1;
+        const totalSteps = 4;
+
+        
+        // SIMPLE WEBHOOK SETUP - Choose ONE of these options:
+        // 
+        // OPTION 1: Use Formspree (FREE & EASY)
+        // 1. Go to https://formspree.io/
+        // 2. Sign up for free
+        // 3. Create a new form and get your form URL
+        // 4. Replace the webhook URL below with your Formspree URL
+        //
+        // OPTION 2: Use your own email (if you have a website)
+        // Just replace the webhook URL with your contact form endpoint
+        //
+        const WEBHOOK_CONFIG = {
+            url: 'https://formspree.io/f/xwprqnnw', // Your actual Formspree form URL
+            yourEmail: 'your-email@example.com' // Your email where you want to receive files
+        };
+
+        function updateProgress() {
+            const progressFill = document.getElementById('progressFill');
+            const stepNumber = document.getElementById('stepNumber');
+            const percentage = (currentStep / totalSteps) * 100;
+            
+            progressFill.style.width = percentage + '%';
+            stepNumber.textContent = currentStep;
+        }
+
+        function nextQuestion(questionNumber) {
+            // Hide current question with animation
+            const currentQuestion = document.querySelector('.question.active');
+            currentQuestion.style.animation = 'slideOutDown 0.5s ease-in-out';
+            
+            setTimeout(() => {
+                currentQuestion.classList.remove('active');
+                currentQuestion.style.animation = '';
+                
+                // Show next question
+                const nextQuestion = document.getElementById('question' + questionNumber);
+                nextQuestion.classList.add('active');
+                
+                currentStep = questionNumber;
+                updateProgress();
+                
+                // Add special effects for final step
+                if (questionNumber === 4) {
+                    createConfetti();
+                    addFloatingHearts();
+                }
+            }, 300);
+        }
+
+        function resetFlow() {
+            // Clear any existing effects
+            document.querySelectorAll('.confetti, .heart').forEach(el => el.remove());
+            
+            // Reset to first question
+            document.querySelectorAll('.question').forEach(q => q.classList.remove('active'));
+            document.getElementById('question1').classList.add('active');
+            
+            // Reset form
+            document.getElementById('updateText').value = '';
+            document.getElementById('fileInput').value = '';
+            document.getElementById('fileInputLabel').textContent = '🎯 Drop the file here, Darte! (or click to browse)';
+            document.getElementById('fileInputLabel').style.color = '#7f8c8d';
+            
+            currentStep = 1;
+            updateProgress();
+        }
+
+        function handleFileSelect(input) {
+            const file = input.files[0];
+            const label = document.getElementById('fileInputLabel');
+            
+            if (file) {
+                selectedFile = file;
+                label.innerHTML = `📎 Selected: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+                label.style.background = 'linear-gradient(135deg, #4CAF50, #45a049)';
+                label.style.color = 'white';
+                
+                // Add some celebration
+                createMiniExplosion(label);
+                addFloatingHearts();
+            } else {
+                label.textContent = '🎯 Drop the file here, Darte! (or click to browse)';
+                label.style.color = '#7f8c8d';
+                label.style.fontWeight = '600';
+            }
+        }
+
+        // Function to convert file to base64
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        // Simple function to send file and update via webhook
+        async function sendFileAndUpdate() {
+            const updateText = document.getElementById('updateText').value;
+            
+            if (!updateText.trim()) {
+                alert('Please provide an update before sending!');
+                return;
+            }
+
+            // Create form data
+            const formData = new FormData();
+            formData.append('from_name', 'Darte');
+            formData.append('message', updateText);
+            formData.append('timestamp', new Date().toLocaleString());
+            formData.append('_replyto', WEBHOOK_CONFIG.yourEmail);
+            
+            // Add file if selected
+            if (selectedFile) {
+                formData.append('file', selectedFile);
+                formData.append('file_info', `File: ${selectedFile.name} (${(selectedFile.size / 1024 / 1024).toFixed(2)} MB)`);
+            }
+
+            try {
+                // Send to webhook
+                const response = await fetch(WEBHOOK_CONFIG.url, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    console.log('File and update sent successfully!');
+                    nextQuestion(4);
+                } else {
+                    throw new Error('Failed to send');
+                }
+                
+            } catch (error) {
+                console.error('Error sending:', error);
+                
+                // Show helpful message for setup
+                if (WEBHOOK_CONFIG.url.includes('YOUR_FORM_ID')) {
+                    alert('🔧 Setup needed! Please replace YOUR_FORM_ID in the code with your actual Formspree form ID. Check the comments in the code for instructions!');
+                } else {
+                    alert('❌ Failed to send. Please check your webhook URL or try again.');
+                }
+            }
+        }
+
+        // Enhanced payment button behavior
+        let dodgeCount = 0;
+        document.getElementById('paymentYes').addEventListener('mouseenter', function() {
+            dodgeCount++;
+            
+            // Make it progressively harder to catch
+            const intensity = Math.min(dodgeCount * 10, 80);
+            const randomX = (Math.random() - 0.5) * intensity;
+            const randomY = (Math.random() - 0.5) * (intensity / 2);
+            
+            this.style.transform = `translate(${randomX}px, ${randomY}px) scale(0.9) rotate(${Math.random() * 20 - 10}deg)`;
+            
+            // Add some sass
+            const sassyTexts = [
+                '💸 Nice try!',
+                '🏃‍♂️ Catch me if you can!',
+                '😏 Not happening!',
+                '🤑 In your dreams!',
+                '🎪 Keep trying!'
+            ];
+            
+            if (dodgeCount > 3) {
+                this.textContent = sassyTexts[Math.floor(Math.random() * sassyTexts.length)];
+            }
+            
+            setTimeout(() => {
+                this.style.transform = 'translate(0, 0) scale(1) rotate(0deg)';
+                if (dodgeCount > 3) {
+                    setTimeout(() => {
+                        this.textContent = '💸 Yeah, pay me first!';
+                    }, 500);
+                }
+            }, 600);
+        });
+
+        // Make the payment button even more evasive when clicked
+        document.getElementById('paymentYes').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Dramatic escape animation
+            this.style.transform = 'translate(100px, -50px) rotate(45deg) scale(0.5)';
+            this.textContent = '🏃‍♂️💨 NOPE!';
+            this.style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)';
+            
+            // Create a little explosion effect
+            createMiniExplosion(this);
+            
+            setTimeout(() => {
+                this.style.transform = 'translate(0, 0) rotate(0deg) scale(1)';
+                this.textContent = '💸 Yeah, pay me first!';
+                this.style.background = 'linear-gradient(135deg, #f39c12, #e67e22)';
+            }, 1500);
+        });
+
+        function createMiniExplosion(element) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            for (let i = 0; i < 8; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'fixed';
+                particle.style.left = centerX + 'px';
+                particle.style.top = centerY + 'px';
+                particle.style.width = '6px';
+                particle.style.height = '6px';
+                particle.style.background = '#f39c12';
+                particle.style.borderRadius = '50%';
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = '1001';
+                
+                const angle = (i / 8) * Math.PI * 2;
+                const distance = 50;
+                const endX = Math.cos(angle) * distance;
+                const endY = Math.sin(angle) * distance;
+                
+                particle.style.animation = `explodeParticle 0.8s ease-out forwards`;
+                particle.style.setProperty('--endX', endX + 'px');
+                particle.style.setProperty('--endY', endY + 'px');
+                
+                document.body.appendChild(particle);
+                
+                setTimeout(() => particle.remove(), 800);
+            }
+        }
+
+        // Add CSS for explosion particles
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes explodeParticle {
+                0% { transform: translate(0, 0) scale(1); opacity: 1; }
+                100% { transform: translate(var(--endX), var(--endY)) scale(0); opacity: 0; }
+            }
+            @keyframes slideOutDown {
+                from { opacity: 1; transform: translateY(0) scale(1); }
+                to { opacity: 0; transform: translateY(50px) scale(0.9); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        function createConfetti() {
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f39c12', '#e74c3c', '#9b59b6'];
+            
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 2 + 's';
+                    confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 5000);
+                }, i * 100);
+            }
+        }
+
+        function addFloatingHearts() {
+            const hearts = ['❤️', '💖', '💕', '💗', '💝'];
+            
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'heart';
+                    heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+                    heart.style.left = Math.random() * 90 + '%';
+                    heart.style.top = Math.random() * 90 + '%';
+                    heart.style.animationDelay = Math.random() * 2 + 's';
+                    
+                    document.querySelector('.container').appendChild(heart);
+                    
+                    setTimeout(() => heart.remove(), 8000);
+                }, i * 200);
+            }
+        }
+
+        // Enhanced drag and drop functionality
+        const fileInputWrapper = document.querySelector('.file-input-wrapper');
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            fileInputWrapper.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            fileInputWrapper.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            fileInputWrapper.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            const fileInput = fileInputWrapper.querySelector('.file-input');
+            fileInput.style.borderColor = '#3498db';
+            fileInput.style.background = 'rgba(52, 152, 219, 0.2)';
+            fileInput.style.transform = 'scale(1.05)';
+            fileInput.textContent = '🎯 Drop it like it\'s hot, Darte!';
+        }
+
+        function unhighlight(e) {
+            const fileInput = fileInputWrapper.querySelector('.file-input');
+            fileInput.style.borderColor = '#bdc3c7';
+            fileInput.style.background = 'rgba(236, 240, 241, 0.5)';
+            fileInput.style.transform = 'scale(1)';
+            if (!document.getElementById('fileInput').files.length) {
+                fileInput.textContent = '🎯 Drop the file here, Darte! (or click to browse)';
+            }
+        }
+
+        fileInputWrapper.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length > 0) {
+                document.getElementById('fileInput').files = files;
+                handleFileSelect(document.getElementById('fileInput'));
+            }
+        }
+
+        // Add some random floating elements for extra flair
+        function addRandomFloatingElements() {
+            const emojis = ['🎯', '💫', '⭐', '✨', '🌟'];
+            
+            setInterval(() => {
+                if (Math.random() < 0.3) { // 30% chance every interval
+                    const emoji = document.createElement('div');
+                    emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    emoji.style.position = 'fixed';
+                    emoji.style.left = Math.random() * 100 + 'vw';
+                    emoji.style.top = '100vh';
+                    emoji.style.fontSize = '20px';
+                    emoji.style.pointerEvents = 'none';
+                    emoji.style.zIndex = '999';
+                    emoji.style.animation = 'floatUp 6s linear forwards';
+                    
+                    document.body.appendChild(emoji);
+                    
+                    setTimeout(() => emoji.remove(), 6000);
+                }
+            }, 3000);
+        }
+
+        // Add CSS for floating elements
+        const floatStyle = document.createElement('style');
+        floatStyle.textContent = `
+            @keyframes floatUp {
+                0% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+                100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(floatStyle);
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Start with intro screen
+            setTimeout(() => {
+                const introScreen = document.getElementById('introScreen');
+                const mainContent = document.querySelector('.main-content');
+                
+                // Fade out intro screen
+                introScreen.style.opacity = '0';
+                
+                setTimeout(() => {
+                    introScreen.style.display = 'none';
+                    mainContent.style.display = 'block';
+                    
+                    // Fade in main content
+                    setTimeout(() => {
+                        mainContent.style.opacity = '1';
+                    }, 50);
+                    
+                    // Start floating elements after intro
+                    addRandomFloatingElements();
+                    setInterval(addRandomFloatingElements, 3000);
+                }, 1000);
+            }, 3000); // Show intro for 3 seconds
+        });
+    </script>
+</body>
+</html>
