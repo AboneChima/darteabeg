@@ -637,7 +637,7 @@
             <div class="form-group">
                 <label for="fileInput">📎 Finally attach that file:</label>
                 <div class="file-input-wrapper">
-                    <div class="file-input" id="fileInputLabel">
+                    <div class="file-input" id="fileInputLabel" onclick="document.getElementById('fileInput').click()">
                         🎯 Drop the file here, Darte! (or click to browse)
                     </div>
                     <input type="file" id="fileInput" onchange="handleFileSelect(this)">
@@ -784,12 +784,18 @@
                 return;
             }
 
+            // Show loading state
+            const submitBtn = document.querySelector('.btn-submit');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '⏳ Sending...';
+            submitBtn.disabled = true;
+
             // Create form data
             const formData = new FormData();
-            formData.append('from_name', 'Darte');
+            formData.append('name', 'Darte Update');
+            formData.append('email', WEBHOOK_CONFIG.yourEmail);
             formData.append('message', updateText);
             formData.append('timestamp', new Date().toLocaleString());
-            formData.append('_replyto', WEBHOOK_CONFIG.yourEmail);
             
             // Add file if selected
             if (selectedFile) {
@@ -801,27 +807,33 @@
                 // Send to webhook
                 const response = await fetch(WEBHOOK_CONFIG.url, {
                     method: 'POST',
-                    body: formData,
-                    headers: {
-                        'Accept': 'application/json'
-                    }
+                    body: formData
                 });
 
                 if (response.ok) {
                     console.log('File and update sent successfully!');
-                    nextQuestion(4);
+                    submitBtn.innerHTML = '✅ Sent!';
+                    setTimeout(() => {
+                        nextQuestion(4);
+                    }, 1000);
                 } else {
-                    throw new Error('Failed to send');
+                    const errorText = await response.text();
+                    console.error('Response error:', errorText);
+                    throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
                 }
                 
             } catch (error) {
                 console.error('Error sending:', error);
                 
+                // Reset button
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                
                 // Show helpful message for setup
                 if (WEBHOOK_CONFIG.url.includes('YOUR_FORM_ID')) {
                     alert('🔧 Setup needed! Please replace YOUR_FORM_ID in the code with your actual Formspree form ID. Check the comments in the code for instructions!');
                 } else {
-                    alert('❌ Failed to send. Please check your webhook URL or try again.');
+                    alert(`❌ Failed to send: ${error.message}. Please check your webhook URL or try again.`);
                 }
             }
         }
