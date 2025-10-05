@@ -1216,14 +1216,16 @@ This is a service request submitted through the Darte application.`;
             // Netlify Forms Configuration (RECOMMENDED)
             netlify: {
                 formName: 'darte-payment-request', // Must match the hidden form name
-                endpoint: '/', // Netlify forms submit to the same domain
-                enabled: !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1') // Only enable on production
+                endpoint: window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1') 
+                    ? 'https://darteabeg.netlify.app/' // Your Netlify site URL for local testing
+                    : '/', // Use relative path when deployed
+                enabled: true // Always enabled since you have Netlify Forms configured
             },
             
             // Fallback options
             formspree: {
                 url: 'https://formspree.io/f/mzzjvayd', // Your Formspree form URL (backup)
-                enabled: window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1') // Enable for local development
+                enabled: false // Disabled since you're using Netlify Forms
             },
             
             yourEmail: 'your-email@example.com', // Your email where you want to receive files
