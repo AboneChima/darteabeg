@@ -915,9 +915,6 @@
                 <button class="btn btn-submit" onclick="sendPaymentRequest()" id="moneySubmit" disabled>
                         💸 Send Payment Request
                     </button>
-                    <button class="btn btn-secondary" onclick="nextQuestion(5)" style="margin-top: 10px; background: #95a5a6;">
-                        🧪 Test Success Page
-                    </button>
                 <button class="btn btn-no" onclick="window.open('https://wa.me/qr/OOOSDUYABKJEK1', '_blank')" style="margin-top: 15px; background: #25d366;">
                     💬 Or Contact via WhatsApp
                 </button>
@@ -1129,13 +1126,10 @@ This is a service request submitted through the Darte application.`;
                 });
 
                 if (response.ok) {
-                    console.log('Service request sent successfully via Netlify Forms!');
-                    console.log('Redirecting to success page in 1 second...');
                     submitBtn.innerHTML = '✅ Service Request Sent!';
                     
                     // Redirect to separate payment success page
                     setTimeout(() => {
-                        console.log('Now calling nextQuestion(5)...');
                         nextQuestion(5);
                     }, 1000);
                 } else {
@@ -1299,7 +1293,6 @@ This is a service request submitted through the Darte application.`;
                     // Success page effects
                     createConfetti();
                     addFloatingHearts();
-                    console.log('Success page displayed!');
                 }
             }, 300);
         }
@@ -1416,7 +1409,6 @@ This is a service request submitted through the Darte application.`;
                 });
 
                 if (response.ok) {
-                    console.log('Update sent successfully!');
                     submitBtn.innerHTML = '✅ Sent!';
                     showNotification('🎉 Your update has been sent successfully!', 'success');
                     setTimeout(() => {
