@@ -1,25 +1,11 @@
 [build]
-  # Build command (if needed)
-  # command = "npm run build"
-  
   # Directory to publish (current directory for static site)
   publish = "."
-
-[build.environment]
-  # Environment variables for build process
-  NODE_VERSION = "18"
 
 # Form handling configuration
 [[forms]]
   # Enable form detection
   name = "darte-payment-request"
-
-# Redirect rules for SPA behavior (if needed)
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-  conditions = {Role = ["admin"]}
 
 # Headers for security and performance
 [[headers]]
