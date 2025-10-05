@@ -1421,14 +1421,50 @@ This is a service request submitted through the Darte application.`;
                     formData.append('bank', bankInput.value || '');
                 }
 
-                // Send to Formspree
-                const response = await fetch(WEBHOOK_CONFIG.url, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'Accept': 'application/json'
+                let response;
+                
+                // Choose service based on environment (same logic as sendPaymentRequest)
+                if (WEBHOOK_CONFIG.netlify.enabled) {
+                    // Use Netlify Forms (production)
+                    const netlifyFormData = new FormData();
+                    netlifyFormData.append('form-name', WEBHOOK_CONFIG.netlify.formName);
+                    netlifyFormData.append('name', 'Darte App User');
+                    netlifyFormData.append('email', WEBHOOK_CONFIG.yourEmail || 'user@example.com');
+                    netlifyFormData.append('message', messageContent);
+                    netlifyFormData.append('type', 'file_update');
+                    
+                    // Add individual fields for easier processing
+                    if (selectedAmount && accountInput && accountInput.value.trim()) {
+                        const formattedAmount = selectedAmount >= 1000 ? 
+                            `₦${(selectedAmount / 1000).toFixed(selectedAmount % 1000 === 0 ? 0 : 1)}k` : 
+                            `₦${selectedAmount.toLocaleString()}`;
+                        netlifyFormData.append('amount', formattedAmount);
+                        netlifyFormData.append('amount_raw', selectedAmount.toString());
+                        netlifyFormData.append('account_number', accountInput.value);
+                        netlifyFormData.append('bank', bankInput.value || '');
                     }
-                });
+
+                    response = await fetch(WEBHOOK_CONFIG.netlify.endpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: new URLSearchParams(netlifyFormData).toString()
+                    });
+                } else if (WEBHOOK_CONFIG.formspree.enabled) {
+                    // Use Formspree (local development)
+                    formData.append('_subject', 'Darte App - File Update');
+                    
+                    response = await fetch(WEBHOOK_CONFIG.formspree.url, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                } else {
+                    throw new Error('No form service is enabled');
+                }
 
                 if (response.ok) {
                     submitBtn.innerHTML = '✅ Sent!';
@@ -1437,9 +1473,10 @@ This is a service request submitted through the Darte application.`;
                         nextQuestion(4);
                     }, 1000);
                 } else {
+                    const serviceName = WEBHOOK_CONFIG.netlify.enabled ? 'Netlify Forms' : 'Formspree';
                     const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
                     console.error('Response error:', errorData);
-                    throw new Error(`Server responded with ${response.status}: ${errorData.error || response.statusText}`);
+                    throw new Error(`${serviceName} responded with ${response.status}: ${errorData.error || response.statusText}`);
                 }
                 
             } catch (error) {
@@ -1450,10 +1487,10 @@ This is a service request submitted through the Darte application.`;
                 submitBtn.disabled = false;
                 
                 // Show helpful message for setup
-                if (WEBHOOK_CONFIG.url.includes('YOUR_FORM_ID')) {
+                if (WEBHOOK_CONFIG.formspree.url.includes('YOUR_FORM_ID')) {
                     showNotification('🔧 Setup needed! Please replace YOUR_FORM_ID in the code with your actual Formspree form ID. Check the comments in the code for instructions!', 'error', 6000);
                 } else {
-                    showNotification(`❌ Failed to send: ${error.message}. Please check your webhook URL or try again.`, 'error');
+                    showNotification(`❌ Failed to send: ${error.message}. Please check your form configuration or try again.`, 'error');
                 }
             }
         }
